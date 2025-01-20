@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=4 uid="uid://dexngot5wihih"]
+[gd_scene load_steps=7 format=4 uid="uid://dexngot5wihih"]
 
 [ext_resource type="Texture2D" uid="uid://8k0ixqfnn2lv" path="res://Sprites/Environment/Tile Set.png" id="1_tr2i4"]
 [ext_resource type="Texture2D" uid="uid://dmmq3ruxmcjeh" path="res://Sprites/Environment/Decor Items.png" id="2_nhkr4"]
+[ext_resource type="PackedScene" uid="uid://c3td27kb2chgr" path="res://Scenes/Player.tscn" id="3_nhkr4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7rqgy"]
 texture = ExtResource("1_tr2i4")
@@ -94,3 +95,6 @@ tile_set = SubResource("TileSet_y4jh7")
 z_index = 2
 tile_map_data = PackedByteArray("AAD9//X/AQADAAQAAAD+//X/AQADAAQAAAD///X/AQADAAQAAAAAAPX/AQADAAQAAAABAPX/AQADAAQAAAACAPX/AQADAAQAAAARAPb/AQADAAQAAAASAPb/AQADAAQAAAATAPb/AQADAAQAAAAUAPb/AQADAAQAAAAVAPb/AQADAAQAAAAWAPb/AQADAAQAAAADAP//AQADAAQAAAD5//r/AQADAAQAAAD6//r/AQADAAQAAAD6//7/AQADAAQAAAD7//7/AQADAAQAAAD8//7/AQADAAQAAAAWAPr/AQADAAQAAAAVAPr/AQADAAQAAAAQAP//AQADAAQAAAAPAP//AQADAAQAAAAJAP//AQADAAQAAAAIAP//AQADAAQAAAAHAP//AQADAAQAAAAKAPX/AQADAAQAAAAJAPX/AQADAAQAAAAIAPX/AQADAAQAAAAHAPX/AQADAAQAAAA=")
 tile_set = SubResource("TileSet_y4jh7")
+
+[node name="Player" parent="." instance=ExtResource("3_nhkr4")]
+position = Vector2(-8, -16)
