@@ -2,13 +2,17 @@ extends CharacterBody2D
 class_name PlayerController
 
 var animationTree : AnimationTree
+var attackArea : Area2D
 var horizontalInput : AxisManager
 var verticalInput : ButtonManager
+var attackInput : ButtonManager
 var verticalCoyoteTimer : UtilityTimer
 
 var currentVelocity : Vector2
 var currentDelta : float
 var facingDirection : int
+
+var attackActive : bool
 
 var currentState : int
 enum states {
@@ -17,6 +21,8 @@ enum states {
 	InAirEnter = 2,
 	InAir = 3,
 	Jump = 4,
+	GroundAttackEnter = 5,
+	GroundAttack = 6,
 }
 
 var amountOfJump : int = 1
@@ -27,8 +33,11 @@ func _draw() -> void:
 
 func _ready() -> void:
 	animationTree = get_node("AnimationTree")
+	attackArea = get_node("Area2D")
+	
 	horizontalInput = AxisManager.new("Move_Left", "Move_Right")
-	verticalInput = ButtonManager.new("Jump", 200)
+	verticalInput = ButtonManager.new("Jump", 170)
+	attackInput = ButtonManager.new("Melee", 170)
 	
 	verticalCoyoteTimer = UtilityTimer.new(100)
 	verticalCoyoteTimer.OnTimerDone.connect(DisableJump)
@@ -42,24 +51,33 @@ func _physics_process(delta: float) -> void:
 	currentVelocity = velocity
 	currentDelta = delta
 	
-	CheckIfShouldFlip()
 	horizontalInput.Tick()
 	verticalInput.Tick()
 	verticalCoyoteTimer.Tick()
+	attackInput.Tick()
 
 	if (!is_on_floor()): currentVelocity += get_gravity() * currentDelta
 
 	match currentState:
 		states.Idle:
+			CheckIfShouldFlip()
 			IdleState()
 		states.Move:
+			CheckIfShouldFlip()
 			MoveState()
 		states.InAirEnter:
+			CheckIfShouldFlip()
 			InAirEnterState()
 		states.InAir:
+			CheckIfShouldFlip()
 			InAirState()
 		states.Jump:
+			CheckIfShouldFlip()
 			JumpState()
+		states.GroundAttackEnter:
+			GroundAttackEnterState()
+		states.GroundAttack:
+			GroundAttackState()
 
 	velocity = currentVelocity
 	move_and_slide()
@@ -88,6 +106,8 @@ func IdleState() -> void:
 		currentState = states.Move
 	elif (currentState == states.Idle && is_on_floor() && CanJump() && verticalInput.input):
 		currentState = states.Jump
+	elif (currentState == states.Idle && is_on_floor() && attackInput.input && !attackActive):
+		currentState = states.GroundAttackEnter
 #endregion
 
 #region Move
@@ -104,6 +124,8 @@ func MoveState() -> void:
 		currentState = states.Idle
 	elif (currentState == states.Move && is_on_floor() && CanJump() && verticalInput.input):
 		currentState = states.Jump
+	elif (currentState == states.Move && is_on_floor() && attackInput.input && !attackActive):
+		currentState = states.GroundAttackEnter
 #endregion
 
 #region InAir
@@ -146,4 +168,32 @@ func CanJump() -> bool:
 
 func DisableJump() -> void:
 	amountOfJumpsLeft = 0
+#endregion
+
+#region GroundAttack
+func GroundAttackEnterState() -> void:
+	currentVelocity = Vector2(0, currentVelocity.y)
+	attackActive = true
+	
+	currentState = states.GroundAttack
+
+func GroundAttackState() -> void:
+	print(states.find_key(currentState))
+	animationTree.set("parameters/Transition/transition_request", "GroundAttack0")
+	
+	if (currentState == states.GroundAttack && !is_on_floor() && !attackActive):
+		currentState = states.InAirEnter
+	elif (currentState == states.GroundAttack && is_on_floor() && !attackActive):
+		currentState = states.Idle
+
+func AttackFinishTrigger() -> void: 
+	attackActive = false
+	
+func AttackDamageTrigger() -> void:
+	attackArea.visible = true
+	var detectedBodies : Array[Node2D] = attackArea.get_overlapping_bodies()
+	for body : Node2D in detectedBodies:
+		if (body.has_method("SetHealth")): body.SetHealth(2)
+	attackArea.visible = false
+	
 #endregion

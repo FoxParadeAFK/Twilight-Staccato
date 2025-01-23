@@ -1,0 +1,35 @@
+[gd_scene load_steps=6 format=3 uid="uid://cesry2fn6dni6"]
+
+[ext_resource type="Script" uid="uid://bc4g5funhdxve" path="res://Scripts/Hostile/Dummy.gd" id="1_s2l5p"]
+[ext_resource type="Texture2D" uid="uid://brladbf7eum1f" path="res://Sprites/Player/CombatDummy_DeathSprites.png" id="1_t56ij"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s2l5p"]
+atlas = ExtResource("1_t56ij")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7go7v"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s2l5p")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kh1t2"]
+size = Vector2(14, 31)
+
+[node name="Dummy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_s2l5p")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_7go7v")
+animation = &"Idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_kh1t2")

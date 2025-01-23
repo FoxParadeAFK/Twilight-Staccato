@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=4 uid="uid://dexngot5wihih"]
+[gd_scene load_steps=8 format=4 uid="uid://dexngot5wihih"]
 
 [ext_resource type="Texture2D" uid="uid://8k0ixqfnn2lv" path="res://Sprites/Environment/Tile Set.png" id="1_tr2i4"]
 [ext_resource type="Texture2D" uid="uid://dmmq3ruxmcjeh" path="res://Sprites/Environment/Decor Items.png" id="2_nhkr4"]
 [ext_resource type="PackedScene" uid="uid://c3td27kb2chgr" path="res://Scenes/Player.tscn" id="3_nhkr4"]
+[ext_resource type="PackedScene" uid="uid://cesry2fn6dni6" path="res://Scenes/Dummy.tscn" id="4_7rqgy"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7rqgy"]
 texture = ExtResource("1_tr2i4")
@@ -76,7 +77,8 @@ texture = ExtResource("2_nhkr4")
 9:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -24, -4, -24, -4, 8, -8, 8)
 
 [sub_resource type="TileSet" id="TileSet_y4jh7"]
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 2
+physics_layer_0/collision_mask = 5
 sources/1 = SubResource("TileSetAtlasSource_7rqgy")
 sources/2 = SubResource("TileSetAtlasSource_qxria")
 
@@ -98,3 +100,6 @@ tile_set = SubResource("TileSet_y4jh7")
 
 [node name="Player" parent="." instance=ExtResource("3_nhkr4")]
 position = Vector2(206, -134)
+
+[node name="Dummy" parent="." instance=ExtResource("4_7rqgy")]
+position = Vector2(210, -16)
