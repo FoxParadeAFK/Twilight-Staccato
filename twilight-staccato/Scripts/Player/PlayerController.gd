@@ -7,6 +7,7 @@ var horizontalInput : AxisManager
 var verticalInput : ButtonManager
 var attackInput : ButtonManager
 var verticalCoyoteTimer : UtilityTimer
+var attackAnimationCycleTimer : UtilityTimer
 
 var currentVelocity : Vector2
 var currentDelta : float
@@ -28,6 +29,9 @@ enum states {
 var amountOfJump : int = 1
 var amountOfJumpsLeft : int
 
+var amountOfAttacks : int = 2
+var amountOfAttacksCounter : int
+
 func _draw() -> void:
 	pass
 
@@ -41,8 +45,11 @@ func _ready() -> void:
 	
 	verticalCoyoteTimer = UtilityTimer.new(100)
 	verticalCoyoteTimer.OnTimerDone.connect(DisableJump)
+	attackAnimationCycleTimer = UtilityTimer.new(700)
+	attackAnimationCycleTimer.OnTimerDone.connect(ResetAttackAnimation)
 	
 	facingDirection = 1
+	amountOfAttacksCounter = -1
 	amountOfJumpsLeft = amountOfJump
 
 	currentState = states.Idle
@@ -54,6 +61,7 @@ func _physics_process(delta: float) -> void:
 	horizontalInput.Tick()
 	verticalInput.Tick()
 	verticalCoyoteTimer.Tick()
+	attackAnimationCycleTimer.Tick()
 	attackInput.Tick()
 
 	if (!is_on_floor()): currentVelocity += get_gravity() * currentDelta
@@ -173,13 +181,14 @@ func DisableJump() -> void:
 #region GroundAttack
 func GroundAttackEnterState() -> void:
 	currentVelocity = Vector2(0, currentVelocity.y)
+	animationTree.set("parameters/Transition/transition_request", "GroundAttack%s" % CycleAttackAnimation())
+	attackAnimationCycleTimer.StartUtilityTimer()
 	attackActive = true
 	
 	currentState = states.GroundAttack
 
 func GroundAttackState() -> void:
 	print(states.find_key(currentState))
-	animationTree.set("parameters/Transition/transition_request", "GroundAttack0")
 	
 	if (currentState == states.GroundAttack && !is_on_floor() && !attackActive):
 		currentState = states.InAirEnter
@@ -195,5 +204,14 @@ func AttackDamageTrigger() -> void:
 	for body : Node2D in detectedBodies:
 		if (body.has_method("SetHealth")): body.SetHealth(2)
 	attackArea.visible = false
+
+func ResetAttackAnimation() -> void:
+	amountOfAttacksCounter = -1
+
+func CycleAttackAnimation() -> int:
+	print("qwer %s" % amountOfAttacksCounter)
+	amountOfAttacksCounter += 1
+	if (amountOfAttacksCounter >= amountOfAttacks): amountOfAttacksCounter = 0
+	return	amountOfAttacksCounter
 	
 #endregion
